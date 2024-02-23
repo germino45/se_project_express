@@ -53,7 +53,8 @@ module.exports.deleteItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(InvalidIdError).send({ message: "Data Not Found" });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(InvalidDataError).send({ message: "Bad Request" });
       }
       return res.status(InternalError).send({ message: "Server Error" });
