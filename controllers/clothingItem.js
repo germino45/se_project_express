@@ -47,7 +47,7 @@ module.exports.deleteItem = (req, res) => {
     .findByIdAndDelete(itemId)
     .orFail()
     .then(() => {
-      res.status(OKResponse).send({});
+      res.status(OKResponse).send({ message: "Deletion Successful" });
     })
     .catch((err) => {
       console.error(err);
