@@ -21,8 +21,6 @@ app.use(cors());
 
 const { PORT = 3001 } = process.env;
 
-console.log("hello world");
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
