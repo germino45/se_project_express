@@ -2,9 +2,10 @@ const clothingItem = require("../models/clothingItemSchema");
 const {
   OKResponse,
   InvalidDataError,
+  ForbiddenError,
   InvalidIdError,
   InternalError,
-} = require("../utils/constants");
+} = require("../utils/errors");
 
 module.exports.getItems = (req, res) => {
   clothingItem
@@ -44,8 +45,18 @@ module.exports.postItem = (req, res) => {
 module.exports.deleteItem = (req, res) => {
   const { itemId } = req.params;
   clothingItem
-    .findByIdAndDelete(itemId)
+    .findById(itemId)
     .orFail()
+    .then((item) => {
+      if (!item.owner.equals(req.user._id)) {
+        return res
+          .status(ForbiddenError)
+          .send({ message: "Cannot Complete Action" });
+      }
+      return item.deleteOne().then((user) => {
+        res.send(user);
+      });
+    })
     .then(() => {
       res.status(OKResponse).send({ message: "Deletion Successful" });
     })
@@ -83,8 +94,8 @@ module.exports.likeItem = (req, res) => {
 };
 
 module.exports.dislikeItem = (req, res) => {
-  const user = req.user._id;
   const { itemId } = req.params;
+  const user = req.user._id;
   clothingItem
     .findByIdAndUpdate(itemId, { $pull: { likes: user } }, { new: true })
     .orFail()
