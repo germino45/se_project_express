@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userSchema");
 const {
   OKResponse,
@@ -7,11 +9,9 @@ const {
   ConflictError,
   InternalError,
 } = require("../utils/errors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 
-/*module.exports.getUsers = (req, res) => {
+/* module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       res.send(users);
@@ -22,7 +22,7 @@ const { JWT_SECRET } = require("../utils/config");
     });
 }; */
 
-//create new user
+// create new user
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -52,7 +52,7 @@ module.exports.createUser = (req, res) => {
   });
 };
 
-//login
+// login
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
@@ -74,7 +74,7 @@ module.exports.login = (req, res) => {
     });
 };
 
-//get current user info
+// get current user info
 module.exports.getCurrentUser = (req, res) => {
   const userId = req.user._id;
 
@@ -96,7 +96,7 @@ module.exports.getCurrentUser = (req, res) => {
     });
 };
 
-//update user info
+// update user info
 module.exports.updateCurrentUser = (req, res) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
