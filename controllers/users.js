@@ -32,9 +32,6 @@ module.exports.createUser = (req, res) => {
         res
           .status(OKResponse)
           .send({ name: user.name, avatar: user.avatar, email: user.email });
-        if (!email) {
-          throw new Error({ message: "Email already exists" });
-        }
       })
       .catch((err) => {
         console.error(err);
@@ -56,6 +53,10 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(InvalidDataError).send({ message: "Invalid Data" });
+  }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -65,12 +66,12 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (!email || !password) {
-        return res.status(InvalidDataError).send({ message: "Invalid Data" });
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UnauthorizedError)
+          .send({ message: "You are unauthorized to view this page" });
       }
-      return res
-        .status(UnauthorizedError)
-        .send({ message: "You are unauthorized to view this page" });
+      return res.status(InternalError).send({ message: "Server Error" });
     });
 };
 
@@ -111,11 +112,14 @@ module.exports.updateCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
+      if (err.message === "DocumentNotFoundError") {
         return res.status(InvalidIdError).send({ message: "User Not Found" });
       }
       if (err.name === "CastError") {
         return res.status(InvalidDataError).send({ message: "Bad Request" });
+      }
+      if (err.name === "ValidationError") {
+        return res.status(InvalidDataError).send({ message: "Invalid Data" });
       }
       return res.status(InternalError).send({ message: "Server Error" });
     });

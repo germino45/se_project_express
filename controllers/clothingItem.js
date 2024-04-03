@@ -53,12 +53,9 @@ module.exports.deleteItem = (req, res) => {
           .status(ForbiddenError)
           .send({ message: "Cannot Complete Action" });
       }
-      return item.deleteOne().then((user) => {
-        res.send(user);
+      return item.deleteOne().then(() => {
+        res.status(OKResponse).send({ message: "Deletion Successful" });
       });
-    })
-    .then(() => {
-      res.status(OKResponse).send({ message: "Deletion Successful" });
     })
     .catch((err) => {
       console.error(err);

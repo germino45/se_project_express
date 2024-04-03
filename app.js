@@ -16,8 +16,9 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/", indexRouter);
 app.use(cors());
+
+app.use("/", indexRouter);
 
 const { PORT = 3001 } = process.env;
 
