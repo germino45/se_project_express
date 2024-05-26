@@ -21,10 +21,10 @@ module.exports.getItems = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-      //console.error(err);
-      //return res
-      //.status(InternalError)
-      //.send({ message: "Unable To Retrieve Data" });
+      // console.error(err);
+      // return res
+      // .status(InternalError)
+      // .send({ message: "Unable To Retrieve Data" });
     });
 };
 
@@ -67,12 +67,12 @@ module.exports.deleteItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(InvalidIdError).send({ message: "Data Not Found" });
+        new NotFoundError("Data Not Found");
       }
       if (err.name === "CastError") {
-        return res.status(InvalidDataError).send({ message: "Bad Request" });
+        new BadRequestError("Bad Request");
       } else {
-        next(error);
+        next(err);
       }
       return res.status(InternalError).send({ message: "Server Error" });
     });
