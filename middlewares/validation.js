@@ -13,8 +13,10 @@ module.exports.clothingItemValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     imageUrl: Joi.string().required().custom(validateURL),
+    weather: Joi.string().valid("hot", "warm", "cold").required(),
   }),
 });
+
 module.exports.userInfoValidator = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -32,6 +34,13 @@ module.exports.loginValidator = celebrate({
 
 module.exports.idValidator = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24),
+    itemId: Joi.string().length(24).hex().required(),
+  }),
+});
+
+module.exports.updateUserValidator = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().required().custom(validateURL),
   }),
 });
