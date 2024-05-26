@@ -8,7 +8,7 @@ const {
   InvalidIdError,
   ConflictError,
   InternalError,
-} = require("../utils/errors");
+} = require("../utils/errorCodes");
 const { JWT_SECRET } = require("../utils/config");
 
 /* module.exports.getUsers = (req, res) => {
