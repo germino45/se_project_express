@@ -7,7 +7,7 @@ const ConflictError = require("../utils/errors/ConflictError");
 const UnauthorizedError = require("../utils/errors/UnauthorizedError");
 const BadRequestError = require("../utils/errors/BadRequestError");
 
-const NotFoundError = require("../utils/errors/notFoundError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 const { JWT_SECRET } = require("../utils/config");
 

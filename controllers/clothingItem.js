@@ -3,7 +3,7 @@ const { OKResponse } = require("../utils/errorCodes");
 
 const BadRequestError = require("../utils/errors/BadRequestError");
 const ForbiddenError = require("../utils/errors/ForbiddenError");
-const NotFoundError = require("../utils/errors/notFoundError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 module.exports.getItems = (req, res, next) => {
   clothingItem
