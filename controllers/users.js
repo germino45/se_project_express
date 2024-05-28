@@ -1,14 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userSchema");
-const {
-  OKResponse,
-  InvalidDataError,
-  UnauthorizedError,
-  InvalidIdError,
-  ConflictError,
-  InternalError,
-} = require("../utils/errorCodes");
+const { OKResponse } = require("../utils/errorCodes");
+
+const ConflictError = require("../utils/errors/ConflictError");
+const UnauthorizedError = require("../utils/errors/UnauthorizedError");
+const BadRequestError = require("../utils/errors/BadRequestError");
+
+const NotFoundError = require("../utils/errors/notFoundError");
+
 const { JWT_SECRET } = require("../utils/config");
 
 /* module.exports.getUsers = (req, res) => {
@@ -23,7 +23,7 @@ const { JWT_SECRET } = require("../utils/config");
 }; */
 
 // create new user
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt.hash(password, 10).then((hash) => {
@@ -37,24 +37,23 @@ module.exports.createUser = (req, res) => {
         console.error(err);
         console.log(err.name);
         if (err.code === 11000) {
-          return res
-            .status(ConflictError)
-            .send({ message: "User already exists" });
+          next(new ConflictError("User already exists"));
         }
         if (err.name === "ValidationError") {
-          return res.status(InvalidDataError).send({ message: "Invalid Data" });
+          next(new BadRequestError("Invalid Data"));
+        } else {
+          next(err);
         }
-        return res.status(InternalError).send({ message: "Server Error" });
       });
   });
 };
 
 // login
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(InvalidDataError).send({ message: "Invalid Data" });
+    next(new BadRequestError("Invalid Data"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -67,16 +66,15 @@ module.exports.login = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(UnauthorizedError)
-          .send({ message: "You are unauthorized to view this page" });
+        next(new UnauthorizedError("You are unauthorized to view this page"));
+      } else {
+        next(err);
       }
-      return res.status(InternalError).send({ message: "Server Error" });
     });
 };
 
 // get current user info
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
@@ -88,17 +86,18 @@ module.exports.getCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(InvalidIdError).send({ message: "User Not Found" });
+        next(new NotFoundError("User Not Found"));
       }
       if (err.name === "CastError") {
-        return res.status(InvalidDataError).send({ message: "Bad Request" });
+        next(new BadRequestError("Bad Request"));
+      } else {
+        next(err);
       }
-      return res.status(InternalError).send({ message: "Server Error" });
     });
 };
 
 // update user info
-module.exports.updateCurrentUser = (req, res) => {
+module.exports.updateCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
   User.findByIdAndUpdate(
@@ -113,14 +112,15 @@ module.exports.updateCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.message === "DocumentNotFoundError") {
-        return res.status(InvalidIdError).send({ message: "User Not Found" });
+        next(new NotFoundError("User Not Found"));
       }
       if (err.name === "CastError") {
-        return res.status(InvalidDataError).send({ message: "Bad Request" });
+        next(new BadRequestError("Bad Request"));
       }
       if (err.name === "ValidationError") {
-        return res.status(InvalidDataError).send({ message: "Invalid Data" });
+        next(new BadRequestError("Invalid Data"));
+      } else {
+        next(err);
       }
-      return res.status(InternalError).send({ message: "Server Error" });
     });
 };
