@@ -2,7 +2,13 @@
 
 This project focuses on the development of a server for the WTWR application. This project uses Mongoose, a JavaScript object-oriented programming library commonly used to connect MongoDB and Node.js. This project allows for the creation and storage of both users and clothing items created through a server that allows for API calls.
 
-## Technologies
+## Cloud Deployment and Hosting
+
+Domain Name — https://wtwr.elephantass.com
+
+Users can now put the website above into the address bar of their browser to access this site. Users can signup, login, add cards and see other users' cards.
+
+### Technologies
 
 Database — a storage of organized data with multiple ways of access.
 
